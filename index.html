@@ -27,6 +27,16 @@
     left: 10px;">
         <button onClick="load('cities')">Load US Cities (~1k)</button>        
     </div>    
+
+    <div style="position: absolute;
+    z-index: 99999;
+    bottom: 68px;
+    left: 10px;">
+    <div id="slidecontainer">
+        <input type="range" min="0" max="1" value=".5" step=".1" class="slider" id="myRange">        
+      </div>
+    </div>
+
     <div id="map" style="height: 100%; width: 100%;">
             <div class="legend geometry top center hide">
                 <div class="wrapper">
@@ -35,8 +45,16 @@
             </div>
         </div>
     
-    <script>
+    <script>            
+
             var self = this;
+            var slider = document.getElementById("myRange");
+            slider.oninput = function() {
+                console.log("opacity", this.value);
+                if(self.pixiOverlayWrapper){
+                    self.pixiOverlayWrapper.updateProperty({alpha:this.value});
+                }
+            }
             self.map = L.map('map').setView([46.953387, 2.892341], 6);
             L.tileLayer('//stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}.png', {
                 subdomains: 'abcd',
@@ -79,7 +97,7 @@
                       });      
 
 
-                    const layer = self.pixiOverlayWrapper.createLayer(city, markers, (marker, textures) => {
+                    self.layer = self.pixiOverlayWrapper.createLayer(city, markers, (marker, textures) => {
                         //use random colors...
                         const index = Math.floor(Math.random() * colors.length);                                                               
                         const hexColor = self.pixiOverlayWrapper.convertColorToHex(colors[index]);                       
@@ -94,7 +112,11 @@
 
                         let leafletMarker;
                         markerSprite.on('click', () => {
-                            let content = marker.city || marker.label;
+                            let content = "";//marker.city || marker.label; 
+                            debugger;                           
+                            Object.keys(marker).forEach((key) => {
+                                content += `${key} : ${marker[key]} <br/>`                                
+                            })
                             let popup = L.popup({ className : 'custom-popup' }).setContent(content).setLatLng([marker.lat, marker.lon]);
                             setTimeout(() => {
                                 popup.openOn(self.map);
