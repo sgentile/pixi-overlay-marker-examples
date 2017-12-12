@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/node_modules/leaflet/dist/leaflet.css" />
     <script src="/node_modules/leaflet/dist/leaflet.js"></script>
     <script src="/node_modules/pixi.js/dist/pixi.js"></script>
+    <script src="/node_modules/pixi-filters/lib/pixi-filters.js"></script>    
     <script src="/node_modules/leaflet-pixi-overlay/L.PixiOverlay.js"></script>
     <script src="/node_modules/pixi-overlay-markers/dist/PixiOverlayMarkers.web.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>   
@@ -90,6 +91,7 @@
                         markerSprite.interactive = true;
                         markerSprite.hitArea = new PIXI.Circle(0, 0, 15);
                         markerSprite.alpha = .7;
+
                         let leafletMarker;
                         markerSprite.on('click', () => {
                             let content = marker.city || marker.label;
@@ -107,7 +109,10 @@
                             markerSprite._runTransformation = (sprite, project, scale, invScale) => {
                                 let newScale = .65 / scale; 
                                 sprite.scale.set(newScale);                                
-                            }                                                                       
+                            }                                
+                            //markerSprite.filters = [new window.__pixi_filters.GlowFilter(15, 2, 1, 0xFF0000, 0.5)];
+                            markerSprite.filters = [new window.__pixi_filters.GlowFilter(5, 8, 8, 0x22228c, 1)];
+                                                               
                             self.pixiOverlayWrapper.update();
                         });
 
@@ -116,7 +121,8 @@
                             markerSprite.alpha = .7;   
                             markerSprite._runTransformation = (sprite, project, scale, invScale) => {                                                                 
                                 sprite.scale.set(invScale);                              
-                            }                        
+                            }                    
+                            markerSprite.filters = [];    
                             self.pixiOverlayWrapper.update();                            
                         });
                         return markerSprite;
